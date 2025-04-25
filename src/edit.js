@@ -39,6 +39,14 @@ export default function Edit({ attributes, setAttributes }) {
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
     const blockProps = useBlockProps();
+    
+    // Effet pour récupérer la clé API depuis la variable globale si disponible
+    useEffect(() => {
+        // Si la clé API n'est pas déjà définie dans les attributs et que la variable globale existe
+        if (!apiKey && typeof window !== 'undefined' && window.stockTrackerData && window.stockTrackerData.apiKey) {
+            setAttributes({ apiKey: window.stockTrackerData.apiKey });
+        }
+    }, []);
 
     // Fonction pour récupérer les données des actions
     const getStockData = async () => {
@@ -86,7 +94,7 @@ export default function Edit({ attributes, setAttributes }) {
                         label={__('Clé API Finnhub', 'stock-tracker')}
                         value={apiKey}
                         onChange={(value) => setAttributes({ apiKey: value })}
-                        help={__('Clé API déjà configurée. Modifiez uniquement si nécessaire.', 'stock-tracker')}
+                        help={__('La clé API est chargée depuis le fichier .key à la racine du plugin. Modifiez ce fichier pour changer la clé.', 'stock-tracker')}
                     />
                     <SelectControl
                         multiple

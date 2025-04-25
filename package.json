@@ -11,7 +11,7 @@
     "lint:js": "wp-scripts lint-js",
     "packages-update": "wp-scripts packages-update"
   },
-  "author": "Votre Nom",
+  "author": "Akrem Belkahla, infinityweb.tn",
   "license": "GPL-2.0-or-later",
   "devDependencies": {
     "@wordpress/scripts": "^26.0.0"

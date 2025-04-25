@@ -25,7 +25,7 @@ registerBlockType('stock-tracker/market-data', {
         },
         apiKey: {
             type: 'string',
-            default: 'd05rgchr01qgqsu940tgd05rgchr01qgqsu940u0',
+            default: '',
         },
         autoRefresh: {
             type: 'boolean',

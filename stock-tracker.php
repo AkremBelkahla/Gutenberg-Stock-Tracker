@@ -3,9 +3,11 @@
  * Plugin Name: Stock Tracker
  * Description: Un bloc Gutenberg pour suivre les données boursières en temps réel.
  * Version: 1.0.0
- * Author: Votre Nom
+ * Author: Akrem Belkahla, infinityweb.tn
  * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: stock-tracker
+ * Domain Path: /languages 
  *
  * @package stock-tracker
  */
@@ -13,6 +15,19 @@
 // Empêcher l'accès direct
 if (!defined('ABSPATH')) {
     exit;
+}
+
+/**
+ * Récupère la clé API Finnhub depuis le fichier .key
+ * 
+ * @return string La clé API ou une chaîne vide si le fichier n'existe pas
+ */
+function stock_tracker_get_api_key() {
+    $key_file = __DIR__ . '/.key';
+    if (file_exists($key_file)) {
+        return trim(file_get_contents($key_file));
+    }
+    return '';
 }
 
 /**
@@ -29,6 +44,15 @@ function stock_tracker_register_block() {
         array('wp-api-fetch'),
         filemtime(plugin_dir_path(__FILE__) . 'build/api.js'),
         true
+    );
+    
+    // Enregistre la clé API comme variable JavaScript
+    wp_localize_script(
+        'stock-tracker-block-editor',
+        'stockTrackerData',
+        array(
+            'apiKey' => stock_tracker_get_api_key(),
+        )
     );
 }
 add_action('init', 'stock_tracker_register_block');
