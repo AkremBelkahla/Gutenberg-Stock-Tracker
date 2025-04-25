@@ -2,8 +2,6 @@
 
 Un bloc Gutenberg pour afficher les données boursières en temps réel dans votre site WordPress.
 
-**Auteur**: Akrem Belkahla, infinityweb.tn
-
 ## ✨ Fonctionnalités
 
 - Affichage des données boursières en temps réel via l'API Finnhub

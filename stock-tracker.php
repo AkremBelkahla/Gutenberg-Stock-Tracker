@@ -3,11 +3,12 @@
  * Plugin Name: Stock Tracker
  * Description: Un bloc Gutenberg pour suivre les données boursières en temps réel.
  * Version: 1.0.0
- * Author: Akrem Belkahla, infinityweb.tn
+ * Author: Akrem Belkahla
+ * Site: infinityweb.tn
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: stock-tracker
- * Domain Path: /languages 
+ * Domain Path: /languages
  *
  * @package stock-tracker
  */
@@ -18,7 +19,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Récupère la clé API Finnhub depuis le fichier .key
+ * 🔑 Récupère la clé API Finnhub depuis le fichier .key
  * 
  * @return string La clé API ou une chaîne vide si le fichier n'existe pas
  */
@@ -31,7 +32,7 @@ function stock_tracker_get_api_key() {
 }
 
 /**
- * Enregistre le bloc Gutenberg et les assets associés.
+ * 💾 Enregistre le bloc Gutenberg et les assets associés.
  */
 function stock_tracker_register_block() {
     // Enregistre automatiquement tous les blocs dans le répertoire build

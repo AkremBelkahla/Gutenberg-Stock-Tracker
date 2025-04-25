@@ -11,7 +11,8 @@
     "lint:js": "wp-scripts lint-js",
     "packages-update": "wp-scripts packages-update"
   },
-  "author": "Akrem Belkahla, infinityweb.tn",
+  "author": "Akrem Belkahla",
+  "homepage": "https://infinityweb.tn",
   "license": "GPL-2.0-or-later",
   "devDependencies": {
     "@wordpress/scripts": "^26.0.0"
