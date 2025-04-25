@@ -1,0 +1,133 @@
+/**
+ * Styles pour le bloc Stock Tracker.
+ */
+
+// Variables
+$positive-color: #00873c;
+$negative-color: #dc3545;
+$border-color: #e0e0e0;
+$background-color: #f9f9f9;
+$text-color: #333;
+$light-text-color: #666;
+
+// Conteneur principal
+.stock-tracker-grid {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// En-tête avec titre et contrôles
+.stock-tracker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.stock-tracker-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stock-tracker-last-updated {
+    font-size: 14px;
+    color: $light-text-color;
+}
+
+// Grille de cartes
+.stock-tracker-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+// Carte individuelle
+.stock-card {
+    background-color: $background-color;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.stock-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    
+    .stock-symbol {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+    
+    .stock-price {
+        font-size: 20px;
+        font-weight: 700;
+    }
+}
+
+.stock-card-body {
+    .stock-change {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        
+        &.positive {
+            color: $positive-color;
+        }
+        
+        &.negative {
+            color: $negative-color;
+        }
+    }
+    
+    .stock-previous {
+        font-size: 14px;
+        color: $light-text-color;
+    }
+}
+
+// Message d'erreur
+.stock-tracker-error {
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    
+    .stock-tracker-error-message {
+        color: #c53030;
+        margin-bottom: 10px;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .stock-tracker-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .stock-tracker-cards {
+        grid-template-columns: 1fr;
+    }
+}
