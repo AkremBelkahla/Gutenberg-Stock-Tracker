@@ -11,34 +11,31 @@ document.addEventListener('DOMContentLoaded', function() {
         const autoRefresh = container.dataset.autoRefresh === 'true';
         const refreshInterval = parseInt(container.dataset.refreshInterval, 10) || 5;
         
+        console.log('Stock Tracker: Initialisation', {
+            symbols,
+            apiKey: apiKey ? 'présente' : 'absente',
+            autoRefresh,
+            refreshInterval
+        });
+
         if (!symbols.length || !apiKey) {
+            const message = !symbols.length ? 'Aucun symbole sélectionné' : 'Clé API manquante';
             container.innerHTML = `
                 <div class="stock-tracker-error">
-                    <p class="stock-tracker-error-message">Configuration incomplète du bloc Stock Tracker</p>
+                    <p class="stock-tracker-error-message">Configuration incomplète du bloc Stock Tracker: ${message}</p>
                 </div>
             `;
             return;
         }
 
-        // Créer la structure de base
-        container.innerHTML = `
-            <div class="stock-tracker-grid">
-                <div class="stock-tracker-header">
-                    <h3>Données boursières en temps réel</h3>
-                    <div class="stock-tracker-controls">
-                        <span class="stock-tracker-last-updated"></span>
-                    </div>
-                </div>
-                <div class="stock-tracker-cards"></div>
-            </div>
-        `;
-
         const stockGrid = container.querySelector('.stock-tracker-cards');
         const lastUpdatedElement = container.querySelector('.stock-tracker-last-updated');
         
         async function fetchStockData() {
+            console.log('Stock Tracker: Début de la récupération des données');
             try {
                 const results = {};
+                console.log('Stock Tracker: Symboles à récupérer:', symbols);
                 
                 await Promise.all(
                     symbols.map(async (symbol) => {
@@ -68,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function updateDisplay(data) {
+            console.log('Stock Tracker: Début mise à jour affichage', data);
+            
             // Mise à jour de l'horodatage
             const now = new Date();
             lastUpdatedElement.textContent = `Dernière mise à jour: ${now.toLocaleTimeString()}`;
@@ -77,6 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
             symbols.forEach(symbol => {
                 orderedData[symbol] = data[symbol];
             });
+            
+            console.log('Stock Tracker: stockGrid présent ?', !!stockGrid);
 
             // Crée les cartes une seule fois dans l'ordre alphabétique
             if (!stockGrid.hasChildNodes()) {

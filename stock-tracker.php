@@ -35,14 +35,27 @@ function stock_tracker_get_api_key() {
  * 💾 Enregistre le bloc Gutenberg et les assets associés.
  */
 function stock_tracker_register_block() {
-    // Enregistre le bloc à partir du fichier block.json
-    register_block_type(__DIR__);
+    // Récupère la clé API
+    $api_key = stock_tracker_get_api_key();
+    
+    // Enregistre le bloc à partir du fichier block.json avec la clé API
+    register_block_type(
+        __DIR__,
+        array(
+            'attributes' => array(
+                'apiKey' => array(
+                    'type' => 'string',
+                    'default' => $api_key
+                )
+            )
+        )
+    );
     
     // Enregistre la clé API comme variable JavaScript globale
     wp_add_inline_script(
-        'wp-blocks',
+        'stock-tracker-market-data-view-script',
         'window.stockTrackerData = ' . wp_json_encode(array(
-            'apiKey' => stock_tracker_get_api_key(),
+            'apiKey' => $api_key,
         )) . ';',
         'before'
     );
