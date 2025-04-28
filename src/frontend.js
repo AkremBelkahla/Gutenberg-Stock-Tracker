@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Stock Tracker: Début de la récupération des données');
             try {
                 const results = {};
+
                 console.log('Stock Tracker: Symboles à récupérer:', symbols);
                 
                 await Promise.all(
@@ -129,21 +130,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const change = quote.dp || 0;
                 const changeClass = change >= 0 ? 'positive' : 'negative';
                 
-                card.innerHTML = `
-                    <div class="stock-card-header">
-                        <h4 class="stock-symbol">${symbol}</h4>
-                        <span class="stock-price">$${quote.c.toFixed(2)}</span>
-                    </div>
-                    <div class="stock-card-body">
-                        <div class="stock-change ${changeClass}">
-                            ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                // Animation de changement
+                card.classList.add('updating');
+                setTimeout(() => {
+                    card.innerHTML = `
+                        <div class="stock-card-header">
+                            <h4 class="stock-symbol">${symbol}</h4>
+                            <span class="stock-price">$${quote.c.toFixed(2)}</span>
                         </div>
+                        <div class="stock-card-body">
+                            <div class="stock-change ${changeClass}">
+                                ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                            </div>
                             <div class="stock-previous">
                                 <span>Haut: $${quote.h.toFixed(2)}</span>
                                 <span>Bas: $${quote.l.toFixed(2)}</span>
                             </div>
-                    </div>
-                `;
+                        </div>
+                    `;
+                    card.classList.remove('updating');
+                }, 100);
             });
         }
 
@@ -153,9 +159,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Actualisation automatique si activée
         if (autoRefresh) {
             console.log('Stock Tracker: Démarrage de l\'actualisation automatique', refreshInterval);
-            setInterval(() => {
-                fetchStockData();
-            }, refreshInterval * 1000);
+            const refreshLoop = () => {
+                fetchStockData()
+                    .then(() => {
+                        setTimeout(refreshLoop, refreshInterval * 1000);
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de l\'actualisation:', error);
+                        setTimeout(refreshLoop, refreshInterval * 1000);
+                    });
+            };
+            refreshLoop();
         }
     });
 });
