@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     containers.forEach(container => {
         // Trie les symboles par ordre alphabétique
         const symbols = (container.dataset.symbols?.split(',') || []).sort();
-        const apiKey = container.dataset.apiKey;
+        // Récupère la clé API depuis les données globales ou depuis le dataset
+        const apiKey = window.stockTrackerData?.apiKey || container.dataset.apiKey;
         const autoRefresh = container.dataset.autoRefresh === 'true';
         const refreshInterval = parseInt(container.dataset.refreshInterval, 10) || 5;
         

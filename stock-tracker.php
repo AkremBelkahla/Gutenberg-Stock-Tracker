@@ -38,7 +38,25 @@ function stock_tracker_register_block() {
     // Récupère la clé API
     $api_key = stock_tracker_get_api_key();
     
-    // Enregistre le bloc à partir du fichier block.json avec la clé API
+    // Enregistre le script frontend
+    wp_register_script(
+        'stock-tracker-frontend',
+        plugins_url('build/frontend.js', __FILE__),
+        array(),
+        filemtime(plugin_dir_path(__FILE__) . 'build/frontend.js'),
+        true
+    );
+
+    // Ajoute la clé API au script frontend
+    wp_localize_script(
+        'stock-tracker-frontend',
+        'stockTrackerData',
+        array(
+            'apiKey' => $api_key,
+        )
+    );
+    
+    // Enregistre le bloc avec le script frontend
     register_block_type(
         __DIR__,
         array(
@@ -47,17 +65,12 @@ function stock_tracker_register_block() {
                     'type' => 'string',
                     'default' => $api_key
                 )
-            )
+            ),
+            'render_callback' => function($attributes, $content) {
+                wp_enqueue_script('stock-tracker-frontend');
+                return $content;
+            }
         )
-    );
-    
-    // Enregistre la clé API comme variable JavaScript globale
-    wp_add_inline_script(
-        'stock-tracker-market-data-view-script',
-        'window.stockTrackerData = ' . wp_json_encode(array(
-            'apiKey' => $api_key,
-        )) . ';',
-        'before'
     );
 }
 add_action('init', 'stock_tracker_register_block');
