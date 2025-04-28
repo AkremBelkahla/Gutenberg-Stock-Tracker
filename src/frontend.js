@@ -90,14 +90,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Met à jour le contenu des cartes existantes
-            Object.keys(orderedData).forEach(symbol => {
+           // Met à jour le contenu des cartes existantes
+            symbols.forEach(symbol => {
+                console.log('Stock Tracker: Symbol en cours de traitement', symbol);
                 const card = stockGrid.querySelector(`#stock-card-${symbol}`);
                 console.log('Stock Tracker: Mise à jour de la carte', symbol, card);
-                if (!card) return;
+                if (!card) {
+                    console.log('Stock Tracker: Carte non trouvée pour', symbol);
+                    return;
+                }
 
                 const quote = orderedData[symbol];
-                 console.log('Stock Tracker: Données pour', symbol, quote);
+                console.log('Stock Tracker: Données pour', symbol, quote);
                 if (!quote) {
                     card.innerHTML = `
                         <div class="stock-card-header">
@@ -145,11 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Chargement initial
         fetchStockData();
-        
-       // Actualisation automatique si activée
+
+        // Actualisation automatique si activée
         if (autoRefresh) {
             console.log('Stock Tracker: Démarrage de l\'actualisation automatique', refreshInterval);
-            setInterval(fetchStockData, refreshInterval * 1000);
+            setInterval(() => {
+                fetchStockData();
+            }, refreshInterval * 1000);
         }
     });
 });
