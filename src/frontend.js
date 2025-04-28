@@ -93,9 +93,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Met à jour le contenu des cartes existantes
             Object.keys(orderedData).forEach(symbol => {
                 const card = stockGrid.querySelector(`#stock-card-${symbol}`);
+                console.log('Stock Tracker: Mise à jour de la carte', symbol, card);
                 if (!card) return;
 
                 const quote = orderedData[symbol];
+                 console.log('Stock Tracker: Données pour', symbol, quote);
                 if (!quote) {
                     card.innerHTML = `
                         <div class="stock-card-header">
