@@ -132,13 +132,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="stock-change ${changeClass}">
                             ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
                         </div>
-                        <div class="stock-previous">
-                            <span>H: $${quote.h.toFixed(2)}</span>
-                            <span>L: $${quote.l.toFixed(2)}</span>
-                            <span class="${quote.d >= 0 ? 'positive' : 'negative'}">
-                                ${change >= 0 ? '+' : ''}$${Math.abs(change).toFixed(2)}
-                            </span>
-                        </div>
+                            <div class="stock-previous">
+                                <span>Haut: $${quote.h.toFixed(2)}</span>
+                                <span>Bas: $${quote.l.toFixed(2)}</span>
+                            </div>
                     </div>
                 `;
             });
@@ -147,8 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Chargement initial
         fetchStockData();
         
-        // Actualisation automatique si activée
+       // Actualisation automatique si activée
         if (autoRefresh) {
+            console.log('Stock Tracker: Démarrage de l\'actualisation automatique', refreshInterval);
             setInterval(fetchStockData, refreshInterval * 1000);
         }
     });

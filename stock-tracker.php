@@ -32,11 +32,12 @@ function stock_tracker_register_block() {
     );
 
     // Enregistre le script Frontend
+    $frontend_asset_file = include(__DIR__ . '/build/frontend.asset.php');
     wp_register_script(
         'stock-tracker-frontend',
         plugins_url('build/frontend.js', __FILE__),
-        array(),
-        filemtime(__DIR__ . '/build/frontend.js'),
+        $frontend_asset_file['dependencies'],
+        $frontend_asset_file['version'],
         true
     );
 
