@@ -39,9 +39,10 @@ function stock_tracker_register_block() {
     $api_key = stock_tracker_get_api_key();
     
     // Enregistre le script frontend
+    $plugin_dir_url = plugin_dir_url(__FILE__);
     wp_register_script(
         'stock-tracker-frontend',
-        plugins_url('build/frontend.js', __FILE__),
+        str_replace('Gutenberg-Stock-Tracker', 'gutenberg-stock-tracker', $plugin_dir_url) . 'build/frontend.js',
         array(),
         filemtime(plugin_dir_path(__FILE__) . 'build/frontend.js'),
         true
