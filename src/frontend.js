@@ -1,0 +1,153 @@
+/**
+ * Script frontend pour afficher les données boursières
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const containers = document.querySelectorAll('.wp-block-stock-tracker-market-data');
+    
+    containers.forEach(container => {
+        // Trie les symboles par ordre alphabétique
+        const symbols = (container.dataset.symbols?.split(',') || []).sort();
+        const apiKey = container.dataset.apiKey;
+        const autoRefresh = container.dataset.autoRefresh === 'true';
+        const refreshInterval = parseInt(container.dataset.refreshInterval, 10) || 5;
+        
+        if (!symbols.length || !apiKey) {
+            container.innerHTML = `
+                <div class="stock-tracker-error">
+                    <p class="stock-tracker-error-message">Configuration incomplète du bloc Stock Tracker</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Créer la structure de base
+        container.innerHTML = `
+            <div class="stock-tracker-grid">
+                <div class="stock-tracker-header">
+                    <h3>Données boursières en temps réel</h3>
+                    <div class="stock-tracker-controls">
+                        <span class="stock-tracker-last-updated"></span>
+                    </div>
+                </div>
+                <div class="stock-tracker-cards"></div>
+            </div>
+        `;
+
+        const stockGrid = container.querySelector('.stock-tracker-cards');
+        const lastUpdatedElement = container.querySelector('.stock-tracker-last-updated');
+        
+        async function fetchStockData() {
+            try {
+                const results = {};
+                
+                await Promise.all(
+                    symbols.map(async (symbol) => {
+                        try {
+                            const response = await fetch(
+                                `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`
+                            );
+                            
+                            if (!response.ok) {
+                                throw new Error(`Erreur API: ${response.status}`);
+                            }
+                            
+                            const data = await response.json();
+                            results[symbol] = data;
+                        } catch (error) {
+                            console.error(`Erreur pour ${symbol}:`, error);
+                            results[symbol] = { error: error.message };
+                        }
+                    })
+                );
+                
+                updateDisplay(results);
+            } catch (error) {
+                console.error('Erreur de récupération des données:', error);
+                stockGrid.innerHTML = '<p>Erreur lors de la récupération des données</p>';
+            }
+        }
+        
+        function updateDisplay(data) {
+            // Mise à jour de l'horodatage
+            const now = new Date();
+            lastUpdatedElement.textContent = `Dernière mise à jour: ${now.toLocaleTimeString()}`;
+
+            // Crée un objet ordonné avec les données triées
+            const orderedData = {};
+            symbols.forEach(symbol => {
+                orderedData[symbol] = data[symbol];
+            });
+
+            // Crée les cartes une seule fois dans l'ordre alphabétique
+            if (!stockGrid.hasChildNodes()) {
+                Object.keys(orderedData).forEach(symbol => {
+                    const card = document.createElement('div');
+                    card.id = `stock-card-${symbol}`;
+                    card.className = 'stock-card';
+                    stockGrid.appendChild(card);
+                });
+            }
+
+            // Met à jour le contenu des cartes existantes
+            Object.keys(orderedData).forEach(symbol => {
+                const card = stockGrid.querySelector(`#stock-card-${symbol}`);
+                if (!card) return;
+
+                const quote = orderedData[symbol];
+                if (!quote) {
+                    card.innerHTML = `
+                        <div class="stock-card-header">
+                            <h4 class="stock-symbol">${symbol}</h4>
+                        </div>
+                        <div class="stock-card-body">
+                            <p>Chargement...</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (quote.error) {
+                    card.innerHTML = `
+                        <div class="stock-card-header">
+                            <h4 class="stock-symbol">${symbol}</h4>
+                        </div>
+                        <div class="stock-card-body">
+                            <p class="stock-tracker-error-message">Erreur: ${quote.error}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const change = quote.dp || 0;
+                const changeClass = change >= 0 ? 'positive' : 'negative';
+                
+                card.innerHTML = `
+                    <div class="stock-card-header">
+                        <h4 class="stock-symbol">${symbol}</h4>
+                        <span class="stock-price">$${quote.c.toFixed(2)}</span>
+                    </div>
+                    <div class="stock-card-body">
+                        <div class="stock-change ${changeClass}">
+                            ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                        </div>
+                        <div class="stock-previous">
+                            <span>H: $${quote.h.toFixed(2)}</span>
+                            <span>L: $${quote.l.toFixed(2)}</span>
+                            <span class="${quote.d >= 0 ? 'positive' : 'negative'}">
+                                ${change >= 0 ? '+' : ''}$${Math.abs(change).toFixed(2)}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Chargement initial
+        fetchStockData();
+        
+        // Actualisation automatique si activée
+        if (autoRefresh) {
+            setInterval(fetchStockData, refreshInterval * 1000);
+        }
+    });
+});

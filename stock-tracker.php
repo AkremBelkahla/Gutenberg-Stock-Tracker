@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Stock Tracker
+ * Plugin Name: Gutenberg Stock Tracker
  * Description: Un bloc Gutenberg pour suivre les données boursières en temps réel.
  * Version: 1.0.0
  * Author: Akrem Belkahla
@@ -35,25 +35,16 @@ function stock_tracker_get_api_key() {
  * 💾 Enregistre le bloc Gutenberg et les assets associés.
  */
 function stock_tracker_register_block() {
-    // Enregistre automatiquement tous les blocs dans le répertoire build
-    register_block_type(__DIR__ . '/build');
-
-    // Enregistre le script pour les appels API côté client
-    wp_register_script(
-        'stock-tracker-api',
-        plugins_url('build/api.js', __FILE__),
-        array('wp-api-fetch'),
-        filemtime(plugin_dir_path(__FILE__) . 'build/api.js'),
-        true
-    );
+    // Enregistre le bloc à partir du fichier block.json
+    register_block_type(__DIR__);
     
-    // Enregistre la clé API comme variable JavaScript
-    wp_localize_script(
-        'stock-tracker-block-editor',
-        'stockTrackerData',
-        array(
+    // Enregistre la clé API comme variable JavaScript globale
+    wp_add_inline_script(
+        'wp-blocks',
+        'window.stockTrackerData = ' . wp_json_encode(array(
             'apiKey' => stock_tracker_get_api_key(),
-        )
+        )) . ';',
+        'before'
     );
 }
 add_action('init', 'stock_tracker_register_block');

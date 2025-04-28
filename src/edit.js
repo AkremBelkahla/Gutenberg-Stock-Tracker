@@ -20,16 +20,16 @@ import StockGrid from './components/StockGrid';
 import ErrorMessage from './components/ErrorMessage';
 import { fetchStockData } from './utils/api';
 
-// Liste des symboles d'actions disponibles
+// Liste des symboles d'actions disponibles triés par ordre alphabétique
 const AVAILABLE_STOCKS = [
-    { label: 'Apple (AAPL)', value: 'AAPL' },
-    { label: 'Microsoft (MSFT)', value: 'MSFT' },
-    { label: 'Google (GOOGL)', value: 'GOOGL' },
     { label: 'Amazon (AMZN)', value: 'AMZN' },
+    { label: 'Apple (AAPL)', value: 'AAPL' },
+    { label: 'Google (GOOGL)', value: 'GOOGL' },
+    { label: 'Meta (META)', value: 'META' },
+    { label: 'Microsoft (MSFT)', value: 'MSFT' },
+    { label: 'Netflix (NFLX)', value: 'NFLX' },
     { label: 'NVIDIA (NVDA)', value: 'NVDA' },
     { label: 'Tesla (TSLA)', value: 'TSLA' },
-    { label: 'Meta (META)', value: 'META' },
-    { label: 'Netflix (NFLX)', value: 'NFLX' },
 ];
 
 export default function Edit({ attributes, setAttributes }) {
@@ -98,10 +98,15 @@ export default function Edit({ attributes, setAttributes }) {
                     />
                     <SelectControl
                         multiple
-                        label={__('Symboles des actions', 'stock-tracker')}
+                        label={__('Symboles des actions (max 4)', 'stock-tracker')}
                         value={stockSymbols}
                         options={AVAILABLE_STOCKS}
-                        onChange={(value) => setAttributes({ stockSymbols: value })}
+                        onChange={(value) => {
+                            if (value.length <= 4) {
+                                setAttributes({ stockSymbols: value });
+                            }
+                        }}
+                        help={stockSymbols.length >= 4 ? __('Nombre maximum de symboles atteint (4)', 'stock-tracker') : ''}
                     />
                     <ToggleControl
                         label={__('Actualisation automatique', 'stock-tracker')}

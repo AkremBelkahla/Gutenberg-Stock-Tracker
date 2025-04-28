@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 2,
+    "name": "stock-tracker/market-data",
+    "version": "1.0.0",
+    "title": "Stock Tracker",
+    "category": "widgets",
+    "icon": "chart-line",
+    "description": "Affiche les données boursières en temps réel",
+    "supports": {
+        "html": false,
+        "align": ["wide", "full"]
+    },
+    "textdomain": "stock-tracker",
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/index.css",
+    "style": "file:./build/style-index.css",
+    "viewScript": "file:./build/frontend.js",
+    "attributes": {
+        "stockSymbols": {
+            "type": "array",
+            "default": ["AAPL", "MSFT", "GOOGL"]
+        },
+        "apiKey": {
+            "type": "string",
+            "default": ""
+        },
+        "autoRefresh": {
+            "type": "boolean",
+            "default": true
+        },
+        "refreshInterval": {
+            "type": "number",
+            "default": 5
+        }
+    }
+}
