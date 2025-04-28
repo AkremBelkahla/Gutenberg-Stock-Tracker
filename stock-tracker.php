@@ -19,60 +19,68 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * 🔑 Récupère la clé API Finnhub depuis le fichier .key
- * 
- * @return string La clé API ou une chaîne vide si le fichier n'existe pas
- */
-function stock_tracker_get_api_key() {
-    $key_file = __DIR__ . '/.key';
-    if (file_exists($key_file)) {
-        return trim(file_get_contents($key_file));
-    }
-    return '';
-}
-
-/**
- * 💾 Enregistre le bloc Gutenberg et les assets associés.
+ *  Enregistre le bloc Gutenberg et les assets associés.
  */
 function stock_tracker_register_block() {
-    // Récupère la clé API
-    $api_key = stock_tracker_get_api_key();
-    
-    // Enregistre le script frontend
-    $plugin_dir_url = plugin_dir_url(__FILE__);
+    // Enregistre le script Editor
+    $asset_file = include(__DIR__ . '/build/index.asset.php');
+    wp_register_script(
+        'stock-tracker-editor',
+        plugins_url('build/index.js', __FILE__),
+        $asset_file['dependencies'],
+        $asset_file['version']
+    );
+
+    // Enregistre le script Frontend
     wp_register_script(
         'stock-tracker-frontend',
-        str_replace('Gutenberg-Stock-Tracker', 'gutenberg-stock-tracker', $plugin_dir_url) . 'build/frontend.js',
+        plugins_url('build/frontend.js', __FILE__),
         array(),
-        filemtime(plugin_dir_path(__FILE__) . 'build/frontend.js'),
+        filemtime(__DIR__ . '/build/frontend.js'),
         true
     );
 
-    // Ajoute la clé API au script frontend
-    wp_localize_script(
-        'stock-tracker-frontend',
-        'stockTrackerData',
-        array(
-            'apiKey' => $api_key,
-        )
+    // Initialise les données du script
+    $script_data = array();
+    wp_localize_script('stock-tracker-editor', 'stockTrackerData', $script_data);
+    wp_localize_script('stock-tracker-frontend', 'stockTrackerData', $script_data);
+
+    // Enregistre les styles
+    wp_register_style(
+        'stock-tracker-style',
+        plugins_url('build/style-index.css', __FILE__),
+        array(),
+        filemtime(__DIR__ . '/build/style-index.css')
     );
-    
-    // Enregistre le bloc avec le script frontend
-    register_block_type(
-        __DIR__,
-        array(
-            'attributes' => array(
-                'apiKey' => array(
-                    'type' => 'string',
-                    'default' => $api_key
-                )
+
+    // Enregistre le bloc
+    register_block_type('stock-tracker/market-data', array(
+        'editor_script' => 'stock-tracker-editor',
+        'editor_style' => 'stock-tracker-style',
+        'style' => 'stock-tracker-style',
+        'attributes' => array(
+            'stockSymbols' => array(
+                'type' => 'array',
+                'default' => array('AAPL', 'MSFT', 'GOOGL')
             ),
-            'render_callback' => function($attributes, $content) {
-                wp_enqueue_script('stock-tracker-frontend');
-                return $content;
-            }
-        )
-    );
+            'apiKey' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'autoRefresh' => array(
+                'type' => 'boolean',
+                'default' => true
+            ),
+            'refreshInterval' => array(
+                'type' => 'number',
+                'default' => 5
+            )
+        ),
+        'render_callback' => function($attributes, $content) {
+            wp_enqueue_script('stock-tracker-frontend');
+            return $content;
+        }
+    ));
 }
 add_action('init', 'stock_tracker_register_block');
 
