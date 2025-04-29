@@ -24,7 +24,7 @@ export default function Save({ attributes }) {
         >
             <div className="stock-tracker-grid">
                 <div className="stock-tracker-header">
-                    <h3>Données boursières en temps réel</h3>
+                    <h3>Données boursières</h3>
                     <div className="stock-tracker-controls">
                         <span className="stock-tracker-last-updated"></span>
                     </div>

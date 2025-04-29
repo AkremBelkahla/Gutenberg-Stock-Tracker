@@ -1,6 +1,27 @@
 /**
  * Script frontend pour afficher les données boursières
  */
+
+/**
+ * Retourne l'URL du logo de la société en fonction du symbole boursier
+ * @param {string} symbol - Le symbole boursier de la société
+ * @returns {string} - L'URL du logo
+ */
+function getCompanyLogo(symbol) {
+    const logoMap = {
+        'AAPL': 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+        'MSFT': 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
+        'GOOGL': 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
+        'AMZN': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+        'META': 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
+        'NFLX': 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
+        'NVDA': 'https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg',
+        'TSLA': 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png'
+    };
+    
+    return logoMap[symbol] || 'https://via.placeholder.com/30?text=' + symbol;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const containers = document.querySelectorAll('.wp-block-stock-tracker-market-data');
     
@@ -36,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Stock Tracker: Début de la récupération des données');
             try {
                 const results = {};
-
                 console.log('Stock Tracker: Symboles à récupérer:', symbols);
                 
                 await Promise.all(
@@ -91,18 +111,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-           // Met à jour le contenu des cartes existantes
-            symbols.forEach(symbol => {
-                console.log('Stock Tracker: Symbol en cours de traitement', symbol);
+            // Met à jour le contenu des cartes existantes
+            Object.keys(orderedData).forEach(symbol => {
                 const card = stockGrid.querySelector(`#stock-card-${symbol}`);
-                console.log('Stock Tracker: Mise à jour de la carte', symbol, card);
-                if (!card) {
-                    console.log('Stock Tracker: Carte non trouvée pour', symbol);
-                    return;
-                }
+                if (!card) return;
 
                 const quote = orderedData[symbol];
-                console.log('Stock Tracker: Données pour', symbol, quote);
                 if (!quote) {
                     card.innerHTML = `
                         <div class="stock-card-header">
@@ -130,46 +144,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 const change = quote.dp || 0;
                 const changeClass = change >= 0 ? 'positive' : 'negative';
                 
-                // Animation de changement
-                card.classList.add('updating');
-                setTimeout(() => {
-                    card.innerHTML = `
-                        <div class="stock-card-header">
+                // Définir le logo de la société en fonction du symbole
+                const logoUrl = getCompanyLogo(symbol);
+                
+                card.innerHTML = `
+                    <div class="stock-card-header">
+                        <div class="stock-symbol-container">
+                            <img src="${logoUrl}" alt="${symbol} logo" class="stock-logo" />
                             <h4 class="stock-symbol">${symbol}</h4>
-                            <span class="stock-price">$${quote.c.toFixed(2)}</span>
                         </div>
-                        <div class="stock-card-body">
-                            <div class="stock-change ${changeClass}">
-                                ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
-                            </div>
-                            <div class="stock-previous">
-                                <span>Haut: $${quote.h.toFixed(2)}</span>
-                                <span>Bas: $${quote.l.toFixed(2)}</span>
-                            </div>
+                        <span class="stock-price">$${quote.c.toFixed(2)}</span>
+                    </div>
+                    <div class="stock-card-body">
+                        <div class="stock-change ${changeClass}">
+                            ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
                         </div>
-                    `;
-                    card.classList.remove('updating');
-                }, 100);
+                        <div class="stock-previous">
+                            <span>Haut: $${quote.h.toFixed(2)} Bas: $${quote.l.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
             });
         }
 
         // Chargement initial
         fetchStockData();
-
+        
         // Actualisation automatique si activée
+        let intervalId = null;
         if (autoRefresh) {
-            console.log('Stock Tracker: Démarrage de l\'actualisation automatique', refreshInterval);
-            const refreshLoop = () => {
-                fetchStockData()
-                    .then(() => {
-                        setTimeout(refreshLoop, refreshInterval * 1000);
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de l\'actualisation:', error);
-                        setTimeout(refreshLoop, refreshInterval * 1000);
-                    });
-            };
-            refreshLoop();
+            console.log(`Stock Tracker: Configuration de l'actualisation automatique toutes les ${refreshInterval} secondes`);
+            intervalId = setInterval(fetchStockData, refreshInterval * 1000);
+            
+            // Nettoyage de l'intervalle si le composant est démonté
+            window.addEventListener('beforeunload', () => {
+                if (intervalId) {
+                    console.log('Stock Tracker: Nettoyage de l\'intervalle d\'actualisation');
+                    clearInterval(intervalId);
+                }
+            });
         }
     });
 });

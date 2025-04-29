@@ -45,6 +45,13 @@ export async function fetchStockData(symbols, apiKey) {
                         throw new Error(data.error || 'Données invalides reçues');
                     }
                     
+                    // S'assurer que toutes les propriétés nécessaires sont présentes
+                    if (!data.h || !data.l) {
+                        console.warn(`Données incomplètes pour ${symbol}, ajout de valeurs par défaut`);
+                        data.h = data.h || data.c || 0;
+                        data.l = data.l || data.c || 0;
+                    }
+                    
                     // Stocker les données
                     results[symbol] = data;
                 } catch (error) {

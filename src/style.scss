@@ -52,21 +52,24 @@ $light-text-color: #666;
 
 // Carte individuelle
 .stock-card {
-    background-color: $background-color;
+    background-color: white;
     border: 1px solid $border-color;
     border-radius: 6px;
     padding: 15px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
-    
-    &.updating {
-        opacity: 0.5;
-        transition: opacity 0.3s ease;
-    }
-    
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+    margin-bottom: 10px;
+}
+
+// Logo de la société
+.stock-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    object-fit: contain;
+}
+
+.stock-symbol-container {
+    display: flex;
+    align-items: center;
 }
 
 .stock-card-header {
@@ -89,11 +92,9 @@ $light-text-color: #666;
 
 .stock-card-body {
     .stock-change {
-        display: flex;
-        align-items: center;
-        gap: 5px;
         margin-bottom: 8px;
         font-weight: 600;
+        font-size: 16px;
         
         &.positive {
             color: $positive-color;
