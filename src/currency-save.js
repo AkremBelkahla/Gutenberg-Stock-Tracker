@@ -86,7 +86,7 @@ export default function CurrencySave({ attributes }) {
                                 <div className="currency-rate">
                                     <span className="currency-rate-value">-</span>
                                     <span className="currency-rate-label">
-                                        1 {pair.from} = ? {pair.to}
+                                        1 {pair.from} = <span className="currency-rate-placeholder">Chargement...</span> {pair.to}
                                     </span>
                                 </div>
                             </div>

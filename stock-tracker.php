@@ -49,7 +49,7 @@ function stock_tracker_register_block() {
         $currency_asset_file['dependencies'],
         $currency_asset_file['version']
     );
-
+    
     // Enregistre le script Frontend pour Currency Tracker
     $currency_frontend_asset_file = include(__DIR__ . '/build/currency-frontend.asset.php');
     wp_register_script(
@@ -132,7 +132,16 @@ function stock_tracker_register_block() {
             )
         ),
         'render_callback' => function($attributes, $content) {
+            // Enregistrer le script avec les attributs
             wp_enqueue_script('currency-tracker-frontend');
+            
+            // Passer les attributs au script frontend
+            wp_localize_script('currency-tracker-frontend', 'currencyTrackerData', $attributes);
+            
+            // Ajouter un identifiant unique pour le débogage
+            $unique_id = uniqid('currency-tracker-');
+            $content = str_replace('class="wp-block-stock-tracker-currency-tracker"', 'class="wp-block-stock-tracker-currency-tracker" data-id="' . $unique_id . '"', $content);
+            
             return $content;
         }
     ));
