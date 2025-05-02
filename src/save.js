@@ -19,7 +19,7 @@ export default function Save({ attributes }) {
         <div {...blockProps} 
             data-symbols={stockSymbols.join(',')}
             data-api-key={apiKey || ''}
-            data-auto-refresh={autoRefresh.toString()}
+            data-auto-refresh={autoRefresh ? 'true' : 'false'}
             data-refresh-interval={refreshInterval}
         >
             <div className="stock-tracker-grid">

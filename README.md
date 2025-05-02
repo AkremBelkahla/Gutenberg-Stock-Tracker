@@ -2,7 +2,7 @@
 
 Un bloc Gutenberg pour afficher les données boursières en temps réel dans votre site WordPress.
 
-## ✨ Fonctionnalités 
+## ✨ Fonctionnalités
 
 - Affichage des données boursières en temps réel via l'API Finnhub
 - Sélection multiple de symboles d'actions
@@ -50,7 +50,7 @@ npm run build
 
 ## 🖼️ Captures d'écran
 
-*Des captures d'écran seront ajoutées après la première version stable*
+_Des captures d'écran seront ajoutées après la première version stable_
 
 ## 📄 Licence
 

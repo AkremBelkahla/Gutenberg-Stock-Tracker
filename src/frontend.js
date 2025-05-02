@@ -22,6 +22,28 @@ function getCompanyLogo(symbol) {
     return logoMap[symbol] || 'https://via.placeholder.com/30?text=' + symbol;
 }
 
+// Fonction pour désactiver le cache global sans modifier les en-têtes (pour éviter les problèmes CORS)
+function disableCache() {
+    console.log('Stock Tracker: Désactivation du cache sans modifier les en-têtes pour éviter les problèmes CORS');
+    
+    // Au lieu de modifier window.fetch, nous allons simplement vider les caches existants
+    if (window.caches && window.caches.keys) {
+        window.caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    console.log('Stock Tracker: Suppression du cache', cacheName);
+                    return window.caches.delete(cacheName);
+                })
+            );
+        }).catch(err => {
+            console.warn('Stock Tracker: Erreur lors de la suppression des caches', err);
+        });
+    }
+}
+
+// Désactiver le cache global dès le chargement
+disableCache();
+
 document.addEventListener('DOMContentLoaded', function() {
     const containers = document.querySelectorAll('.wp-block-stock-tracker-market-data');
     
@@ -31,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Récupère la clé API depuis les données globales ou depuis le dataset
         const apiKey = window.stockTrackerData?.apiKey || container.dataset.apiKey;
         const autoRefresh = container.dataset.autoRefresh === 'true';
+        console.log('Stock Tracker: Auto-refresh activé?', autoRefresh, 'Valeur brute:', container.dataset.autoRefresh);
         const refreshInterval = parseInt(container.dataset.refreshInterval, 10) || 5;
         
         console.log('Stock Tracker: Initialisation', {
@@ -54,23 +77,52 @@ document.addEventListener('DOMContentLoaded', function() {
         const lastUpdatedElement = container.querySelector('.stock-tracker-last-updated');
         
         async function fetchStockData() {
-            console.log('Stock Tracker: Début de la récupération des données');
+            console.log('Stock Tracker: Début de la récupération des données à', new Date().toLocaleTimeString());
             try {
                 const results = {};
                 console.log('Stock Tracker: Symboles à récupérer:', symbols);
                 
+                // Ajouter un paramètre cacheBuster pour éviter la mise en cache des requêtes
+                const cacheBuster = new Date().getTime();
+                
                 await Promise.all(
                     symbols.map(async (symbol) => {
                         try {
+                            // Utiliser l'API Finnhub avec paramètres anti-cache dans l'URL uniquement (pour éviter les problèmes CORS)
                             const response = await fetch(
-                                `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`
+                                `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}&_=${cacheBuster}&random=${Math.random()}&nocache=true`,
+                                {
+                                    method: 'GET',
+                                    cache: 'no-store' // Désactive le cache sans ajouter d'en-têtes personnalisés
+                                }
                             );
                             
                             if (!response.ok) {
+                                if (response.status === 429) {
+                                    throw new Error('Limite de taux API dépassée. Veuillez réessayer plus tard.');
+                                }
                                 throw new Error(`Erreur API: ${response.status}`);
                             }
                             
                             const data = await response.json();
+                            
+                            // Vérifier si les données sont valides
+                            if (!data || data.error) {
+                                throw new Error(data.error || 'Données invalides reçues');
+                            }
+                            
+                            // S'assurer que toutes les propriétés nécessaires sont présentes
+                            if (!data.h || !data.l) {
+                                console.warn(`Données incomplètes pour ${symbol}, ajout de valeurs par défaut`);
+                                data.h = data.h || data.c || 0;
+                                data.l = data.l || data.c || 0;
+                            }
+                            
+                            // Forcer la mise à jour des données en ajoutant un timestamp
+                            data._updated = new Date().getTime();
+                            
+                            console.log(`Stock Tracker: Données Finnhub reçues pour ${symbol}:`, data);
+                            
                             results[symbol] = data;
                         } catch (error) {
                             console.error(`Erreur pour ${symbol}:`, error);
@@ -79,7 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 );
                 
-                updateDisplay(results);
+                if (Object.keys(results).length > 0) {
+                    console.log('Stock Tracker: Mise à jour de l\'affichage avec les nouvelles données', results);
+                    updateDisplay(results);
+                } else {
+                    console.error('Stock Tracker: Aucune donnée récupérée');
+                }
             } catch (error) {
                 console.error('Erreur de récupération des données:', error);
                 stockGrid.innerHTML = '<p>Erreur lors de la récupération des données</p>';
@@ -92,6 +149,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mise à jour de l'horodatage
             const now = new Date();
             lastUpdatedElement.textContent = `Dernière mise à jour: ${now.toLocaleTimeString()}`;
+            
+            // Forcer le rafraîchissement de l'affichage en ajoutant un attribut data-updated
+            container.setAttribute('data-updated', now.getTime());
 
             // Crée un objet ordonné avec les données triées
             const orderedData = {};
@@ -172,9 +232,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Actualisation automatique si activée
         let intervalId = null;
-        if (autoRefresh) {
+        
+        // Fonction pour démarrer l'actualisation automatique
+        function startAutoRefresh() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                console.log('Stock Tracker: Ancien intervalle nettoyé');
+            }
+            
             console.log(`Stock Tracker: Configuration de l'actualisation automatique toutes les ${refreshInterval} secondes`);
-            intervalId = setInterval(fetchStockData, refreshInterval * 1000);
+            intervalId = setInterval(() => {
+                console.log('Stock Tracker: Exécution de l\'actualisation automatique programmée');
+                // Ajouter un paramètre timestamp unique pour forcer le rafraîchissement
+                console.log('Stock Tracker: Actualisation programmée avec timestamp unique', new Date().toLocaleTimeString());
+                fetchStockData();
+            }, refreshInterval * 1000);
+            console.log('Stock Tracker: Nouvel intervalle d\'actualisation configuré', intervalId);
+        }
+        
+        if (autoRefresh) {
+            startAutoRefresh();
             
             // Nettoyage de l'intervalle si le composant est démonté
             window.addEventListener('beforeunload', () => {
