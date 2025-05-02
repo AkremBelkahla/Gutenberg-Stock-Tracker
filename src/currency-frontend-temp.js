@@ -3,10 +3,10 @@
  */
 
 /**
- * Désactive le cache global sans modifier les en-têtes (pour éviter les problèmes CORS)
+ * Du00e9sactive le cache global sans modifier les en-tu00eates (pour u00e9viter les problu00e8mes CORS)
  */
 function disableCache() {
-    console.log('Currency Tracker: Désactivation du cache sans modifier les en-têtes pour éviter les problèmes CORS');
+    console.log('Currency Tracker: Du00e9sactivation du cache sans modifier les en-tu00eates pour u00e9viter les problu00e8mes CORS');
     
     // Au lieu de modifier window.fetch, nous allons simplement vider les caches existants
     if (window.caches && window.caches.keys) {
@@ -23,38 +23,38 @@ function disableCache() {
     }
 }
 
-// Désactiver le cache global dès le chargement
+// Du00e9sactiver le cache global du00e8s le chargement
 disableCache();
 
 document.addEventListener('DOMContentLoaded', function() {
     const containers = document.querySelectorAll('.wp-block-stock-tracker-currency-tracker');
     
     containers.forEach(container => {
-        // Récupère les données du bloc
+        // Ru00e9cupu00e8re les attributs du bloc
+        const blockData = container.dataset;
+        
+        // Ru00e9cupu00e8re les paires de devises
         let currencyPairs = [];
         try {
-            currencyPairs = JSON.parse(container.dataset.currencyPairs || '[]');
+            currencyPairs = JSON.parse(blockData.currencyPairs || '[]');
         } catch (e) {
-            console.error('Currency Tracker: Erreur lors du parsing des paires de devises', e);
+            console.error('Currency Tracker: Erreur lors de la lecture des paires de devises', e);
             currencyPairs = [];
         }
-        const apiKey = container.dataset.apiKey || '';
-        const autoRefresh = container.dataset.autoRefresh === 'true';
-        const refreshInterval = parseInt(container.dataset.refreshInterval, 10) || 5;
         
-        console.log('Currency Tracker: Initialisation', {
-            currencyPairs,
-            apiKey: apiKey ? 'présente' : 'absente',
-            autoRefresh,
-            refreshInterval
-        });
-
-        // Vérifie si les données nécessaires sont présentes
+        // Ru00e9cupu00e8re la clu00e9 API
+        const apiKey = blockData.apiKey || '';
+        
+        // Ru00e9cupu00e8re les paramu00e8tres d'actualisation automatique
+        const autoRefresh = blockData.autoRefresh === 'true';
+        const refreshInterval = parseInt(blockData.refreshInterval || '5', 10);
+        
+        // Vu00e9rifie si les donnu00e9es nu00e9cessaires sont pru00e9sentes
         if (!apiKey || currencyPairs.length === 0) {
-            const message = !apiKey ? 'Clé API manquante' : 'Aucune paire de devises sélectionnée';
+            const message = !apiKey ? 'Clu00e9 API manquante' : 'Aucune paire de devises su00e9lectionnu00e9e';
             container.innerHTML = `
                 <div class="currency-tracker-error">
-                    <p class="currency-tracker-error-message">Configuration incomplète du bloc Currency Tracker: ${message}</p>
+                    <p class="currency-tracker-error-message">Configuration incomplu00e8te du bloc Currency Tracker: ${message}</p>
                 </div>
             `;
             return;
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function getCurrencyName(currencyCode) {
             const currencyNames = {
                 'EUR': 'Euro',
-                'USD': 'Dollar américain',
+                'USD': 'Dollar amu00e9ricain',
                 'GBP': 'Livre britannique',
                 'JPY': 'Yen japonais',
                 'CAD': 'Dollar canadien',
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return currencyNames[currencyCode] || currencyCode;
         }
         
-        // Récupère les éléments du DOM
+        // Ru00e9cupu00e8re les u00e9lu00e9ments du DOM
         const cardsContainer = container.querySelector('.currency-tracker-cards');
         const lastUpdatedElement = container.querySelector('.currency-tracker-last-updated');
         const refreshButton = container.querySelector('.currency-tracker-refresh-button');
@@ -107,44 +107,44 @@ document.addEventListener('DOMContentLoaded', function() {
             return parseFloat(rate).toFixed(4);
         }
         
-        // Fonction pour récupérer les taux de change
+        // Fonction pour ru00e9cupu00e9rer les taux de change
         async function fetchCurrencyRates() {
-            console.log('Currency Tracker: Début de la récupération des données à', new Date().toLocaleTimeString());
+            console.log('Currency Tracker: Du00e9but de la ru00e9cupu00e9ration des donnu00e9es u00e0', new Date().toLocaleTimeString());
             try {
-                // Créer un objet pour stocker les résultats
+                // Cru00e9er un objet pour stocker les ru00e9sultats
                 const results = {};
                 
-                // Récupérer les données pour chaque paire de devises
+                // Ru00e9cupu00e9rer les donnu00e9es pour chaque paire de devises
                 await Promise.all(
                     currencyPairs.map(async (pair) => {
                         try {
-                            // Ajouter un paramètre cacheBuster pour éviter la mise en cache des requêtes
+                            // Ajouter un paramu00e8tre cacheBuster pour u00e9viter la mise en cache des requu00eates
                             const cacheBuster = new Date().getTime();
                             
-                            // Récupérer les taux de change
+                            // Ru00e9cupu00e9rer les taux de change
                             const response = await fetch(
                                 `https://v6.exchangerate-api.com/v6/${apiKey}/pair/${pair.from}/${pair.to}?_=${cacheBuster}&random=${Math.random()}&nocache=true`,
                                 {
                                     method: 'GET',
-                                    cache: 'no-store' // Désactive le cache
+                                    cache: 'no-store' // Du00e9sactive le cache
                                 }
                             );
                             
                             if (!response.ok) {
                                 if (response.status === 429) {
-                                    throw new Error('Limite de taux API dépassée. Veuillez réessayer plus tard.');
+                                    throw new Error('Limite de taux API du00e9passu00e9e. Veuillez ru00e9essayer plus tard.');
                                 }
                                 throw new Error(`Erreur API: ${response.status}`);
                             }
                             
                             const data = await response.json();
                             
-                            // Vérifier si les données sont valides
+                            // Vu00e9rifier si les donnu00e9es sont valides
                             if (!data || data.result !== 'success') {
-                                throw new Error(data.error_type || 'Données invalides reçues');
+                                throw new Error(data.error_type || 'Donnu00e9es invalides reu00e7ues');
                             }
                             
-                            console.log(`Currency Tracker: Données reçues pour ${pair.from} -> ${pair.to}:`, data);
+                            console.log(`Currency Tracker: Donnu00e9es reu00e7ues pour ${pair.from} -> ${pair.to}:`, data);
                             
                             // Stocker le taux de change
                             const pairKey = `${pair.from}_${pair.to}`;
@@ -159,18 +159,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 );
                 
-                // Mettre à jour l'affichage
+                // Mettre u00e0 jour l'affichage
                 updateDisplay(results);
             } catch (error) {
-                console.error('Erreur lors de la récupération des taux de change:', error);
+                console.error('Erreur lors de la ru00e9cupu00e9ration des taux de change:', error);
                 container.innerHTML = `
                     <div class="currency-tracker-error">
                         <p class="currency-tracker-error-message">Erreur: ${error.message}</p>
-                        <button class="currency-tracker-retry-button">Réessayer</button>
+                        <button class="currency-tracker-retry-button">Ru00e9essayer</button>
                     </div>
                 `;
                 
-                // Ajoute un écouteur d'événement au bouton Réessayer
+                // Ajoute un u00e9couteur d'u00e9vu00e9nement au bouton Ru00e9essayer
                 const retryButton = container.querySelector('.currency-tracker-retry-button');
                 if (retryButton) {
                     retryButton.addEventListener('click', fetchCurrencyRates);
@@ -178,22 +178,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Fonction pour mettre à jour l'affichage
+        // Fonction pour mettre u00e0 jour l'affichage
         function updateDisplay(results) {
-            console.log('Currency Tracker: Mise à jour de l\'affichage avec les nouvelles données', results);
+            console.log('Currency Tracker: Mise u00e0 jour de l\'affichage avec les nouvelles donnu00e9es', results);
             
-            // Mise à jour de l'horodatage
+            // Mise u00e0 jour de l'horodatage
             const now = new Date();
             if (lastUpdatedElement) {
-                lastUpdatedElement.textContent = `Dernière mise à jour: ${now.toLocaleTimeString()}`;
+                lastUpdatedElement.textContent = `Derniu00e8re mise u00e0 jour: ${now.toLocaleTimeString()}`;
             }
             
-            // Forcer le rafraîchissement de l'affichage en ajoutant un attribut data-updated
+            // Forcer le rafrau00eechissement de l'affichage en ajoutant un attribut data-updated
             container.setAttribute('data-updated', now.getTime());
 
-            // Mettre à jour les cartes de devises
+            // Mettre u00e0 jour les cartes de devises
             if (cardsContainer) {
-                // Créer les cartes une seule fois si elles n'existent pas déjà
+                // Cru00e9er les cartes une seule fois si elles n'existent pas du00e9ju00e0
                 if (!cardsContainer.hasChildNodes()) {
                     currencyPairs.forEach((pair, index) => {
                         const card = document.createElement('div');
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
                 
-                // Mettre à jour le contenu des cartes existantes
+                // Mettre u00e0 jour le contenu des cartes existantes
                 currencyPairs.forEach((pair, index) => {
                     const pairKey = `${pair.from}_${pair.to}`;
                     const card = cardsContainer.querySelector(`#currency-card-${pair.from}-${pair.to}`);
@@ -215,13 +215,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         card.innerHTML = `
                             <div class="currency-card-header">
                                 <div class="currency-symbol-container">
-                                    <span class="currency-flag">${getCurrencyFlag(pair.from)}</span>
-                                    <h4 class="currency-symbol">${pair.from}</h4>
+                                    <img src="${getCurrencyFlag(pair.from)}" alt="${pair.from}" class="currency-flag" />
+                                    <div class="currency-info">
+                                        <h4 class="currency-symbol">${pair.from}</h4>
+                                        <span class="currency-name">${getCurrencyName(pair.from)}</span>
+                                    </div>
                                 </div>
-                                <div class="currency-arrow">→</div>
+                                <div class="currency-arrow">u2192</div>
                                 <div class="currency-symbol-container">
-                                    <span class="currency-flag">${getCurrencyFlag(pair.to)}</span>
-                                    <h4 class="currency-symbol">${pair.to}</h4>
+                                    <img src="${getCurrencyFlag(pair.to)}" alt="${pair.to}" class="currency-flag" />
+                                    <div class="currency-info">
+                                        <h4 class="currency-symbol">${pair.to}</h4>
+                                        <span class="currency-name">${getCurrencyName(pair.to)}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="currency-card-body">
@@ -237,13 +243,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         card.innerHTML = `
                             <div class="currency-card-header">
                                 <div class="currency-symbol-container">
-                                    <span class="currency-flag">${getCurrencyFlag(pair.from)}</span>
-                                    <h4 class="currency-symbol">${pair.from}</h4>
+                                    <img src="${getCurrencyFlag(pair.from)}" alt="${pair.from}" class="currency-flag" />
+                                    <div class="currency-info">
+                                        <h4 class="currency-symbol">${pair.from}</h4>
+                                        <span class="currency-name">${getCurrencyName(pair.from)}</span>
+                                    </div>
                                 </div>
-                                <div class="currency-arrow">→</div>
+                                <div class="currency-arrow">u2192</div>
                                 <div class="currency-symbol-container">
-                                    <span class="currency-flag">${getCurrencyFlag(pair.to)}</span>
-                                    <h4 class="currency-symbol">${pair.to}</h4>
+                                    <img src="${getCurrencyFlag(pair.to)}" alt="${pair.to}" class="currency-flag" />
+                                    <div class="currency-info">
+                                        <h4 class="currency-symbol">${pair.to}</h4>
+                                        <span class="currency-name">${getCurrencyName(pair.to)}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="currency-card-body">
@@ -265,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <span class="currency-name">${getCurrencyName(pair.from)}</span>
                                 </div>
                             </div>
-                            <div class="currency-arrow">→</div>
+                            <div class="currency-arrow">u2192</div>
                             <div class="currency-symbol-container">
                                 <img src="${getCurrencyFlag(pair.to)}" alt="${pair.to}" class="currency-flag" />
                                 <div class="currency-info">
@@ -281,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     1 ${pair.from} = ${formatRate(result.rate)} ${pair.to}
                                 </span>
                                 <span class="currency-rate-time">
-                                    ${result.time ? `Mis à jour: ${new Date(result.time).toLocaleDateString()}` : ''}
+                                    ${result.time ? `Mis u00e0 jour: ${new Date(result.time).toLocaleDateString()}` : ''}
                                 </span>
                             </div>
                         </div>
@@ -290,45 +302,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Nous avons supprimé le bouton Actualiser pour une mise à jour automatique uniquement
+        // Nous avons supprimu00e9 le bouton Actualiser pour une mise u00e0 jour automatique uniquement
         
-        // Fonction pour démarrer l'actualisation automatique
+        // Fonction pour du00e9marrer l'actualisation automatique
         function startAutoRefresh() {
-            if (intervalId) {
-                clearInterval(intervalId);
-                console.log('Currency Tracker: Ancien intervalle nettoyé');
-            }
+            if (!autoRefresh) return;
             
-            console.log(`Currency Tracker: Configuration de l'actualisation automatique toutes les ${refreshInterval} secondes`);
-            intervalId = setInterval(() => {
-                console.log('Currency Tracker: Exécution de l\'actualisation automatique programmée');
-                console.log('Currency Tracker: Actualisation programmée avec timestamp unique', new Date().toLocaleTimeString());
+            // Intervalle minimum de 1 minute
+            const minInterval = Math.max(1, refreshInterval);
+            
+            // Cru00e9er un intervalle pour actualiser les donnu00e9es
+            const intervalId = setInterval(() => {
+                console.log('Currency Tracker: Exu00e9cution de l\'actualisation automatique programmu00e9e');
+                console.log('Currency Tracker: Actualisation programmu00e9e avec timestamp unique', new Date().toLocaleTimeString());
                 fetchCurrencyRates();
             }, refreshInterval * 60000); // Conversion en minutes
-            console.log('Currency Tracker: Nouvel intervalle d\'actualisation configuré', intervalId, `(${refreshInterval} minutes)`);
+            console.log('Currency Tracker: Nouvel intervalle d\'actualisation configuru00e9', intervalId, `(${refreshInterval} minutes)`);
         }
         
         // Chargement initial
         fetchCurrencyRates();
         
-        // Actualisation automatique si activée
-        let intervalId = null;
-        
+        // Actualisation automatique si activu00e9e
         if (autoRefresh) {
+            console.log('Currency Tracker: Actualisation automatique activu00e9e');
             startAutoRefresh();
-            
-            // Nettoyage de l'intervalle si le composant est démonté
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    if (intervalId) {
-                        clearInterval(intervalId);
-                        console.log('Currency Tracker: Intervalle nettoyé (page cachée)');
-                    }
-                } else if (document.visibilityState === 'visible' && autoRefresh) {
-                    startAutoRefresh();
-                    console.log('Currency Tracker: Intervalle redémarré (page visible)');
-                }
-            });
+        } else {
+            console.log('Currency Tracker: Actualisation automatique du00e9sactivu00e9e');
         }
     });
 });

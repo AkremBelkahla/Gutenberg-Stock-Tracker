@@ -1,57 +1,77 @@
-# 📈 Stock Tracker - Plugin WordPress Gutenberg
+# 📈 Stock & Currency Tracker - WordPress Gutenberg Plugin
 
-Un bloc Gutenberg pour afficher les données boursières en temps réel dans votre site WordPress.
+A WordPress plugin containing two Gutenberg blocks to display real-time stock market data and currency exchange rates on your WordPress site.
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- Affichage des données boursières en temps réel via l'API Finnhub
-- Sélection multiple de symboles d'actions
-- Actualisation automatique des données
-- Interface utilisateur active et moderne
-- Affichage des variations de prix avec codes couleur
-- Gestion des erreurs et des limites de taux API
+### 📊 Stock Tracker Block
+
+- Real-time stock market data display via Finnhub API
+- Multiple stock symbols selection
+- Automatic data refresh
+- Modern and active user interface
+- Price variations with color coding
+- Error handling and API rate limits management
+
+### 💱 Currency Tracker Block
+
+- Real-time exchange rates display via ExchangeRate API
+- Base currency and target currencies selection
+- Automatic rate updates
+- Clean and professional interface
+- Real-time rate updates
+- Error handling and API limits management
 
 ## Installation
 
-1. Téléchargez le dossier `Gutenberg-Stock-Tracker` dans le répertoire `wp-content/plugins/` de votre installation WordPress
-2. Activez le plugin via le menu "Extensions" dans l'administration WordPress
-3. La clé API Finnhub est stockée dans le fichier `.key` à la racine du plugin
-4. Vous pouvez modifier ce fichier pour utiliser votre propre clé API Finnhub
+1. Download the `Gutenberg-Stock-Tracker` folder to the `wp-content/plugins/` directory of your WordPress installation
+2. Activate the plugin through the "Plugins" menu in WordPress admin
+3. The API keys (Finnhub and ExchangeRate) are stored in the `.key` file at the plugin root
+4. You can modify this file to use your own API keys
 
-## 🔍 Configuration requise
+## 🔍 Requirements
 
-- WordPress 5.8 ou supérieure
-- PHP 7.4 ou supérieure
+- WordPress 5.8 or higher
+- PHP 7.4 or higher
 
-## 🚀 Utilisation
+## 🚀 Usage
 
-1. Ajoutez le bloc "Stock Tracker" à votre page ou article
-2. Dans le panneau latéral, vérifiez que la clé API Finnhub est présente (elle est pru00e9-configuru00e9e)
-3. Sélectionnez les symboles d'actions que vous souhaitez afficher
-4. Configurez les options d'actualisation selon vos pru00e9fu00e9rences
+### 📈 Using the Stock Tracker Block
 
-## 💻 Développement
+1. Add the "Stock Tracker" block to your page or post
+2. In the sidebar panel, verify that the Finnhub API key is present
+3. Select the stock symbols you want to display
+4. Configure the refresh options according to your preferences
 
-### 📦 Installation des dépendances
+### 💱 Using the Currency Tracker Block
+
+1. Add the "Currency Tracker" block to your page or post
+2. In the sidebar panel, verify that the ExchangeRate API key is present
+3. Select the base currency and target currencies
+4. Rates will automatically update according to the configured interval
+
+## 💻 Development
+
+### 📦 Installing Dependencies
 
 ```bash
 npm install
 ```
 
-### 🔨 Compilation des assets
+### 🔨 Building Assets
 
 ```bash
-# Pour le développement (avec surveillance des fichiers)
+# For development (with file watching)
 npm run start
 
-# Pour la production
+# For production
 npm run build
 ```
 
-## 🖼️ Captures d'écran
+## 🖼️ Screenshots
 
-_Des captures d'écran seront ajoutées après la première version stable_
+_Screenshots will be added after the first stable release_
 
-## 📄 Licence
+## 📄 License
 
 GPL-2.0-or-later
