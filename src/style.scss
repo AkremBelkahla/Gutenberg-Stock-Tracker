@@ -1,5 +1,5 @@
 /**
- * Styles pour le bloc Stock Tracker.
+ * Styles pour les blocs Stock Tracker et Currency Tracker.
  */
 
 // Variables
@@ -135,5 +135,239 @@ $light-text-color: #666;
     
     .stock-tracker-cards {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Styles pour le Currency Tracker */
+
+// Conteneur principal
+.currency-tracker-container {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// En-tête avec titre et contrôles
+.currency-tracker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.currency-tracker-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.currency-tracker-last-updated {
+    font-size: 14px;
+    color: $light-text-color;
+}
+
+.currency-tracker-refresh-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    
+    &:hover {
+        background-color: #e0e0e0;
+    }
+}
+
+// Tableau des taux de change
+.currency-tracker-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid $border-color;
+    }
+    
+    th {
+        background-color: $background-color;
+        font-weight: 600;
+    }
+    
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.currency-tracker-variation {
+    &.positive {
+        color: $positive-color;
+    }
+    
+    &.negative {
+        color: $negative-color;
+    }
+}
+
+// Message d'erreur
+.currency-tracker-error {
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    
+    .currency-tracker-error-message {
+        color: #c53030;
+        margin-bottom: 10px;
+    }
+}
+
+.currency-tracker-retry-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    
+    &:hover {
+        background-color: #e0e0e0;
+    }
+}
+
+// État de chargement
+.currency-tracker-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    
+    p {
+        margin-top: 10px;
+        color: $light-text-color;
+    }
+}
+
+// Styles spécifiques pour les cartes de devises
+.currency-card {
+    background-color: white;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.currency-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid $border-color;
+}
+
+.currency-symbol-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .currency-flag {
+        width: 40px;
+        height: auto;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .currency-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .currency-symbol {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    
+    .currency-name {
+        font-size: 12px;
+        color: $light-text-color;
+        line-height: 1.2;
+    }
+}
+
+.currency-arrow {
+    font-size: 20px;
+    color: $light-text-color;
+    margin: 0 10px;
+}
+
+.currency-rate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .currency-rate-value {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .currency-rate-label {
+        font-size: 14px;
+        color: $light-text-color;
+        margin-bottom: 5px;
+    }
+    
+    .currency-rate-time {
+        font-size: 12px;
+        color: $light-text-color;
+    }
+    
+    .currency-rate-loading {
+        color: $light-text-color;
+    }
+    
+    .currency-rate-error {
+        color: $negative-color;
+    }
+}
+
+// Responsive pour Currency Tracker
+@media (max-width: 768px) {
+    .currency-tracker-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .currency-tracker-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 769px) {
+    .currency-tracker-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .currency-card {
+        margin-bottom: 0;
     }
 }

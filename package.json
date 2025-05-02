@@ -1,7 +1,7 @@
 {
   "name": "stock-tracker",
   "version": "1.0.0",
-  "description": "Un bloc Gutenberg pour suivre les données boursières en temps réel",
+  "description": "Un bloc Gutenberg pour suivre les données boursières et les taux de change en temps réel",
   "main": "build/index.js",
   "scripts": {
     "build": "wp-scripts build",

@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 2,
+    "name": "stock-tracker/currency-tracker",
+    "version": "1.0.0",
+    "title": "Currency Tracker",
+    "category": "widgets",
+    "icon": "money-alt",
+    "description": "Affiche les taux de change des devises en temps réel",
+    "supports": {
+        "html": false,
+        "align": ["wide", "full"]
+    },
+    "textdomain": "stock-tracker",
+    "editorScript": "file:./build/currency-index.js",
+    "editorStyle": "file:./build/index.css",
+    "style": "file:./build/style-index.css",
+    "viewScript": "file:./build/currency-frontend.js",
+    "attributes": {
+        "currencyPairs": {
+            "type": "array",
+            "default": [
+                {"from": "EUR", "to": "USD"},
+                {"from": "USD", "to": "EUR"},
+                {"from": "EUR", "to": "GBP"},
+                {"from": "EUR", "to": "JPY"}
+            ]
+        },
+        "apiKey": {
+            "type": "string",
+            "default": "4fdbd0d69ad56a5ca6bb3f72"
+        },
+        "autoRefresh": {
+            "type": "boolean",
+            "default": true
+        },
+        "refreshInterval": {
+            "type": "number",
+            "default": 5
+        }
+    }
+}
